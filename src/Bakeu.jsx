@@ -1,10 +1,17 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import logo from '../public/logo.webp'
 import './Bakeu.css'
 
 /* ---- Bu yerni tahrirlang ---- */
-const WORDS = ['Uyda', 'pishirilgan,', 'eshikka', 'yetkazilgan']
-const STATUS = 'Tez kunda'
+const TEXT = {
+  uz: { words: ['Uyda', 'pishirilgan,', 'eshikka', 'yetkazilgan'], status: 'Tez kunda', alt: 'BAKEU logotipi: A harfi shokoladli kuki shaklida', contacts: 'Aloqa', langs: 'Til' },
+  ru: { words: ['Испечено', 'дома,', 'доставлено', 'к\u00a0двери'], status: 'Скоро', alt: 'Логотип BAKEU: буква A в форме печенья с шоколадом', contacts: 'Контакты', langs: 'Язык' },
+}
+const LANGS = ['uz', 'ru']
+const pickLang = () => {
+  try { const s = localStorage.getItem('bakeu-lang'); if (LANGS.includes(s)) return s } catch {}
+  return (navigator.language || '').toLowerCase().startsWith('ru') ? 'ru' : 'uz'
+}
 const DOMAIN = 'bakeu.uz'
 const LINKS = [
   { label: 'Telegram', href: 'https://t.me/bakeu_uz', icon: 'send' },
@@ -97,7 +104,7 @@ function useCrumbs(ref) {
       raf = requestAnimationFrame(tick)
     }
     const onDown = (e) => {
-      if (calm || e.target.closest('a')) return
+      if (calm || e.target.closest('a,button')) return
       for (let i = 0; i < 18; i++) {
         const a = rnd(0, 6.28), s = rnd(0.15, 0.6)
         bursts.push({ x: e.clientX, y: e.clientY, vx: Math.cos(a) * s, vy: Math.sin(a) * s - 0.25, r: rnd(2, 6.5), rot: rnd(0, 6.28), c: pick(), t: 0, life: rnd(900, 1600), sq: Math.random() < 0.5 })
@@ -115,9 +122,18 @@ export default function Bakeu() {
   const canvas = useRef(null)
   useParallax(stage)
   useCrumbs(canvas)
+  const [lang, setLang] = useState(pickLang)
+  const [switched, setSwitched] = useState(false)
+  const t = TEXT[lang]
+  useEffect(() => { document.documentElement.lang = lang }, [lang])
+  const choose = (l) => {
+    if (l === lang) return
+    setLang(l); setSwitched(true)
+    try { localStorage.setItem('bakeu-lang', l) } catch {}
+  }
 
   return (
-    <main className="bk" ref={stage} style={{ '--logo': `url(${logo})` }}>
+    <main className="bk" lang={lang} ref={stage} style={{ '--logo': `url(${logo})` }}>
       <div className="bk-glow" />
       <div className="bk-ring" aria-hidden="true">
         <svg viewBox="-100 -100 200 200">
@@ -136,7 +152,7 @@ export default function Bakeu() {
       <div className="bk-tilt">
         <div className="bk-float">
           <div className="bk-logo">
-            <img src={logo} width="782" height="501" alt="BAKEU logotipi: A harfi shokoladli kuki shaklida" draggable="false" />
+            <img src={logo} width="782" height="501" alt={t.alt} draggable="false" />
             <svg className="bk-steam" viewBox="0 0 91 223" aria-hidden="true">
               <path pathLength="100" d="M12 223C-4 195 26 172 12 142S28 88 12 58 20 18 12 0" />
               <path pathLength="100" d="M46 223C30 195 62 172 46 142S62 88 46 58 54 18 46 0" />
@@ -146,16 +162,22 @@ export default function Bakeu() {
         </div>
       </div>
 
-      <h1 className="bk-tag" aria-label={WORDS.join(' ')}>
-        {WORDS.map((w, i) => <span key={w} aria-hidden="true">{w}{i < WORDS.length - 1 ? ' ' : ''}</span>)}
+      <h1 className="bk-tag" data-sw={switched ? '' : undefined} aria-label={t.words.join(' ')}>
+        {t.words.map((w, i) => <span key={lang + w} aria-hidden="true">{w}{i < t.words.length - 1 ? ' ' : ''}</span>)}
       </h1>
       <svg className="bk-under" viewBox="0 0 260 14" preserveAspectRatio="none" aria-hidden="true">
         <path pathLength="1" d="M4 8Q36 0 68 8T132 8T196 8T256 8" />
       </svg>
 
+      <div className="bk-lang" role="group" aria-label={t.langs}>
+        {LANGS.map((l) => (
+          <button key={l} type="button" aria-pressed={l === lang} onClick={() => choose(l)}>{l.toUpperCase()}</button>
+        ))}
+      </div>
+
       <footer className="bk-foot">
-        <span className="bk-pill"><i className="bk-dot" />{STATUS}</span>
-        <nav className="bk-links" aria-label="Aloqa">
+        <span className="bk-pill"><i className="bk-dot" />{t.status}</span>
+        <nav className="bk-links" aria-label={t.contacts}>
           {LINKS.map((l) => (
             <a key={l.label} href={l.href} target="_blank" rel="noopener noreferrer" aria-label={l.label} title={l.label}><Icon name={l.icon} /></a>
           ))}

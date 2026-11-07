@@ -29,7 +29,6 @@ function Icon({ name }) {
   )
 }
 
-/* Sichqoncha bo'yicha logotip qiyshayishi va yorug'lik ergashishi */
 function useParallax(ref) {
   useEffect(() => {
     const el = ref.current
@@ -57,7 +56,6 @@ function useParallax(ref) {
   }, [ref])
 }
 
-/* Suzib yuruvchi ushoqlar + bosganda sochilish */
 function useCrumbs(ref) {
   useEffect(() => {
     const cv = ref.current

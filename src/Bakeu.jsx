@@ -2,7 +2,6 @@ import { useEffect, useRef, useState } from 'react'
 import logo from '../public/logo.webp'
 import './Bakeu.css'
 
-/* ---- Bu yerni tahrirlang ---- */
 const TEXT = {
   uz: { words: ['Uyda', 'pishirilgan,', 'eshikka', 'yetkazilgan'], status: 'Tez kunda', alt: 'BAKEU logotipi: A harfi shokoladli kuki shaklida', contacts: 'Aloqa', langs: 'Til' },
   ru: { words: ['Испечено', 'дома,', 'доставлено', 'к\u00a0двери'], status: 'Скоро', alt: 'Логотип BAKEU: буква A в форме печенья с шоколадом', contacts: 'Контакты', langs: 'Язык' },
@@ -18,7 +17,6 @@ const LINKS = [
   { label: 'Instagram', href: 'https://instagram.com/bakeu.uz', icon: 'instagram' },
 ]
 const CRUMB_COLORS = ['#3F1A0E', '#5A2A14', '#F5A623', '#E0601A', '#C98A4B']
-/* ----------------------------- */
 
 const reduced = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches
 
